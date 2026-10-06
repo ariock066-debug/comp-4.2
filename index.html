@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM - Deviens un Pro du Web !</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+            --card-hover: #262626;
+            --text-color: #E0E0E0;
+            --text-muted: #9E9E9E;
+            --accent-color: #DEFF9A;
+            --accent-hover: #c9f578;
+            --correct-color: #4EAE67;
+            --correct-bg: rgba(78, 174, 103, 0.15);
+            --wrong-color: #FF6B6B;
+            --wrong-bg: rgba(255, 107, 107, 0.15);
+            --border-color: #2F2F2F;
+            --border-radius: 14px;
+            --font-stack: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-stack);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            line-height: 1.5;
+        }
+
+        .quiz-wrapper {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 780px;
+            padding: 28px;
+            position: relative;
+        }
+
+        .quiz-header {
+            margin-bottom: 22px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 18px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(222, 255, 154, 0.12);
+            color: var(--accent-color);
+            border: 1px solid rgba(222, 255, 154, 0.25);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-pill {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background-color: #121212;
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 1.55rem;
+            color: #FFFFFF;
+            font-weight: 700;
+        }
+
+        .progress-section {
+            margin-top: 14px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background-color: #121212;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #A8E85A, var(--accent-color));
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .question-card {
+            margin: 20px 0;
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .question-title {
+            font-size: 1.18rem;
+            color: #FFFFFF;
+            font-weight: 600;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-button {
+            background-color: #232323;
+            border: 1.5px solid #333333;
+            border-radius: 10px;
+            color: var(--text-color);
+            padding: 14px 16px;
+            font-size: 0.98rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-family: inherit;
+        }
+
+        .option-button:hover:not(:disabled) {
+            background-color: var(--card-hover);
+            border-color: var(--accent-color);
+            transform: translateX(4px);
+        }
+
+        .option-button:disabled {
+            cursor: default;
+        }
+
+        .option-button.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-color);
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        .option-button.correct::after {
+            content: "✓";
+            color: var(--correct-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .option-button.wrong {
+            background-color: var(--wrong-bg);
+            border-color: var(--wrong-color);
+            color: #FFFFFF;
+        }
+
+        .option-button.wrong::after {
+            content: "✕";
+            color: var(--wrong-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .option-button.dimmed {
+            opacity: 0.45;
+        }
+
+        .feedback-container {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .feedback-container.correct {
+            background-color: var(--correct-bg);
+            border-left: 4px solid var(--correct-color);
+        }
+
+        .feedback-container.wrong {
+            background-color: var(--wrong-bg);
+            border-left: 4px solid var(--wrong-color);
+        }
+
+        .feedback-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .feedback-container.correct .feedback-title {
+            color: var(--correct-color);
+        }
+
+        .feedback-container.wrong .feedback-title {
+            color: var(--wrong-color);
+        }
+
+        .feedback-text {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            line-height: 1.45;
+        }
+
+        .actions-row {
+            margin-top: 22px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            background-color: var(--accent-color);
+            color: #121212;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(222, 255, 154, 0.25);
+        }
+
+        .btn-action:disabled {
+            background-color: #2D2D2D;
+            color: #666666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-view {
+            text-align: center;
+            padding: 10px 0;
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .score-circle-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px auto;
+            border-radius: 50%;
+            background: #171717;
+            border: 4px solid var(--accent-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 24px rgba(222, 255, 154, 0.15);
+        }
+
+        .score-val {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        .score-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .results-view h2 {
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .result-description {
+            font-size: 0.98rem;
+            color: var(--text-color);
+            max-width: 580px;
+            margin: 0 auto 24px auto;
+            line-height: 1.5;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 360px;
+            margin: 0 auto 24px auto;
+        }
+
+        .stat-box {
+            background-color: #151515;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .stat-num {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .stat-num.succ { color: var(--correct-color); }
+        .stat-num.err { color: var(--wrong-color); }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .quiz-wrapper {
+                padding: 18px;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+            .question-title {
+                font-size: 1.05rem;
+            }
+            .option-button {
+                padding: 12px 14px;
+                font-size: 0.9rem;
+            }
+            .score-circle-wrapper {
+                width: 130px;
+                height: 130px;
+            }
+            .score-val {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-wrapper">
+        <div id="quiz-view">
+            <div class="quiz-header">
+                <div class="header-top">
+                    <span class="tag-badge">🛡️ Deviens un Pro du Web !</span>
+                    <span class="score-pill" id="live-score">Score : 0 / 40</span>
+                </div>
+                <h1>Traces, Vie Privée &amp; Bons Réflexes</h1>
+                <div class="progress-section">
+                    <div class="progress-info">
+                        <span>Progression</span>
+                        <span id="progress-text">Question 1 sur 40</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-number" id="question-index-label">Question 1</div>
+                <div class="question-title" id="question-text">Chargement de la question...</div>
+                <div class="options-list" id="options-container"></div>
+            </div>
+
+            <div class="feedback-container" id="feedback-box">
+                <div class="feedback-title" id="feedback-title">Bonne réponse !</div>
+                <div class="feedback-text" id="feedback-desc">Explication pédagogique...</div>
+            </div>
+
+            <div class="actions-row">
+                <button class="btn-action" id="next-btn" disabled>Question suivante ➔</button>
+            </div>
+        </div>
+
+        <div class="results-view" id="results-view">
+            <span class="tag-badge" style="margin-bottom: 14px;">Bilan Officiel Pix 6ème</span>
+            
+            <div class="score-circle-wrapper">
+                <div class="score-val" id="final-percent">0%</div>
+                <div class="score-sub">Score Final</div>
+            </div>
+
+            <h2 id="result-title-text">Niveau de Maîtrise</h2>
+            <p class="result-description" id="result-desc-text">Commentaire d'évaluation...</p>
+
+            <div class="summary-stats">
+                <div class="stat-box">
+                    <div class="stat-num succ" id="stat-correct-count">0</div>
+                    <div class="stat-label">Réponses correctes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num err" id="stat-wrong-count">0</div>
+                    <div class="stat-label">Erreurs / Pièges</div>
+                </div>
+            </div>
+
+            <button class="btn-action" onclick="restartQuiz()">🔄 Recommencer l'évaluation</button>
+        </div>
+    </div>
+
+    <script>
+        const rawQuestions = [
+            // Slide 1 & 2 : Les 4 Missions du Pro du Web
+            {
+                q: "Combien de missions principales composent le parcours « Deviens un Pro du Web ! » ?",
+                options: [
+                    "4 missions (Traces & Données, Ta Protection, Le Respect, Tes Bons Réflexes)",
+                    "2 missions (Jouer et Télécharger)",
+                    "10 missions obligatoires",
+                    "3 missions (Écrire, Cliquer, Supprimer)"
+                ],
+                answer: 0,
+                feedback: "Le parcours s'articule autour de 4 missions : 1. Traces & Données, 2. Ta Protection (Vie Privée), 3. Le Respect, 4. Tes Bons Réflexes."
+            },
+            {
+                q: "Quel est l'objectif global du guide « Deviens un Pro du Web ! » ?",
+                options: [
+                    "Maîtriser ses traces, protéger sa vie privée et adopter les bons réflexes pour surfer en toute sécurité",
+                    "Apprendre à pirater les comptes de ses camarades",
+                    "Acheter des abonnements payants en ligne",
+                    "Passer plus de temps sur les réseaux sociaux"
+                ],
+                answer: 0,
+                feedback: "Ce guide te forme à une citoyenneté numérique responsable pour naviguer en confiance et en sécurité."
+            },
+
+            // Slide 3 & 4 : Partie 1 : Traces & Données (Directes vs Indirectes)
+            {
+                q: "Qu'est-ce qu'une « Donnée Directe » selon l'enquête sur tes données ?",
+                options: [
+                    "Une information qui permet de t'identifier directement en un clin d'œil",
+                    "Une vidéo que tu regardes sans être connecté",
+                    "La liste des résultats d'un moteur de recherche",
+                    "Un jeu vidéo gratuit téléchargé en ligne"
+                ],
+                answer: 0,
+                feedback: "Les données directes révèlent immédiatement ton identité sans avoir besoin de recoupements."
+            },
+            {
+                q: "Parmi ces propositions, laquelle est un exemple de Donnée Personnelle DIRECTE ?",
+                options: [
+                    "Ton nom et prénom, ta photo de visage, ton collège ou ton numéro de téléphone",
+                    "Tes vidéos préférées sur une plateforme",
+                    "La liste des sites web consultés hier",
+                    "La météo de ta région"
+                ],
+                answer: 0,
+                feedback: "Ton nom, ton numéro, ta photo et ton établissement scolaire t'identifient personnellement et directement."
+            },
+            {
+                q: "Que sont les « Données Indirectes » ?",
+                options: [
+                    "Des indices qui, combinés ensemble, permettent de deviner qui tu es",
+                    "Des câbles électriques branchés derrière l'écran",
+                    "Des mots de passe donnés à ses amis",
+                    "Des livres empruntés au CDI"
+                ],
+                answer: 0,
+                feedback: "Isolées, elles ne donnent pas ton nom, mais croisées entre elles (vidéos, recherches, GPS), elles permettent de dresser ton profil."
+            },
+            {
+                q: "Parmi les éléments suivants, lesquels constituent des Données INDIRECTES ?",
+                options: [
+                    "Tes vidéos préférées, ta position GPS, tes recherches Internet et la liste de tes amis",
+                    "Ta carte d'identité nationale",
+                    "Ton nom de famille et ton prénom",
+                    "Ton adresse postale complète"
+                ],
+                answer: 0,
+                feedback: "L'historique, la géolocalisation et les centres d'intérêt sont des données indirectes exploitées par les algorithmes."
+            },
+
+            // Slide 5 : Tes Traces Numériques (Volontaires vs Automatiques)
+            {
+                q: "Qu'est-ce qu'une « Trace Volontaire » sur Internet ?",
+                options: [
+                    "Une action que tu choisis expressément de faire (un commentaire, un like, une photo partagée)",
+                    "L'adresse IP enregistrée automatiquement par la box Internet",
+                    "L'heure précise de connexion enregistrée par le serveur",
+                    "La mémoire cache de ton navigateur"
+                ],
+                answer: 0,
+                feedback: "Les traces volontaires résultent d'un geste conscient de publication, de mention 'j'aime' ou de saisie de message."
+            },
+            {
+                q: "Qu'est-ce qu'une « Trace Automatique » générée pendant ta navigation ?",
+                options: [
+                    "Des données enregistrées en coulisses comme l'heure de connexion, l'appareil utilisé et les cookies des sites web",
+                    "Un dessin fait avec un logiciel de peinture",
+                    "Un devoir envoyé sur l'ENT du collège",
+                    "Une photo de vacances postée avec l'accord de tes parents"
+                ],
+                answer: 0,
+                feedback: "Les traces automatiques sont créées et stockées à ton insu par les serveurs et les cookies lors de ta navigation."
+            },
+            {
+                q: "Parmi ces éléments, lequel est une Trace Numérique AUTOMATIQUE ?",
+                options: [
+                    "Les cookies déposés par les sites web visités",
+                    "Un commentaire posté sous un article",
+                    "Un like sous la photo d'un ami",
+                    "Un message privé envoyé sur l'ENT"
+                ],
+                answer: 0,
+                feedback: "Les cookies et identifiants techniques d'appareils sont déposés automatiquement lors du chargement des pages."
+            },
+
+            // Slide 6 & 7 : Partie 2 : Protéger sa vie & Un mot de passe en BÉTON
+            {
+                q: "Quels sont les 3 critères obligatoires pour fabriquer « Un mot de passe en BÉTON » ?",
+                options: [
+                    "Long & Mélangé (min 12 car.) + Un par compte + Secret absolu",
+                    "Court (4 chiffres) + Identique partout + Partagé avec ses amis",
+                    "Son prénom + son année de naissance + le mot 'azerty'",
+                    "Le nom de son collège écrit en minuscules"
+                ],
+                answer: 0,
+                feedback: "Un mot de passe solide exige au moins 12 caractères variés, une unicité par service et une stricte confidentialité."
+            },
+            {
+                q: "Que doit contenir le critère « Long & Mélangé » d'un mot de passe en béton ?",
+                options: [
+                    "Au moins 12 caractères mélangeant majuscules, minuscules, chiffres et symboles (!@#$)",
+                    "Uniquement des chiffres consécutifs (123456789)",
+                    "Un seul mot du dictionnaire sans majuscule",
+                    "La date de naissance complète sans symbole"
+                ],
+                answer: 0,
+                feedback: "Le mélange de 4 types de caractères (haut/bas de casse, chiffres, caractères spéciaux) bloque les attaques par force brute."
+            },
+            {
+                q: "Que signifie la règle « Un par compte » pour vos mots de passe ?",
+                options: [
+                    "Utiliser un mot de passe différent pour les jeux, la messagerie et l'ENT du collège",
+                    "Utiliser le même mot de passe pour tous ses comptes sans exception",
+                    "Changer d'ordinateur à chaque nouvelle création de compte",
+                    "Donner un mot de passe différent à chaque ami"
+                ],
+                answer: 0,
+                feedback: "Si un site de jeu est piraté, vos autres espaces (ENT, emails) restent protégés grâce au mot de passe unique."
+            },
+            {
+                q: "Que stipule le principe du « Secret absolu » pour les mots de passe ?",
+                options: [
+                    "Ne le donne à personne, même pas à ton meilleur ami !",
+                    "Tu peux le donner à tes copains si vous jouez dans la même équipe",
+                    "Tu dois l'écrire au tableau de la classe",
+                    "Tu peux l'envoyer par message public"
+                ],
+                answer: 0,
+                feedback: "Un mot de passe est strictement intime et personnel : le confier à un tiers fait perdre le contrôle de son compte."
+            },
+
+            // Slide 8 : Ton Panneau de Contrôle (Paramètres de confidentialité)
+            {
+                q: "Pourquoi est-il crucial d'activer l'interrupteur « Profil Privé » sur tes applications ?",
+                options: [
+                    "Pour que seuls tes vrais amis validés puissent voir tes publications",
+                    "Pour supprimer définitivement ton compte de l'application",
+                    "Pour empêcher ton téléphone de se recharger",
+                    "Pour que l'écran devienne invisible"
+                ],
+                answer: 0,
+                feedback: "Le profil privé empêche les inconnus, robots et personnes malveillantes d'accéder à tes photos et messages."
+            },
+            {
+                q: "Pourquoi le panneau de contrôle conseille-t-il de « Couper le GPS » sur les applications ?",
+                options: [
+                    "Pour ne pas partager ta position géographique en continu sur les réseaux et applications",
+                    "Pour accélérer la vitesse de ton vélo",
+                    "Pour effacer la carte de ta ville",
+                    "Pour empêcher l'appareil de sonner"
+                ],
+                answer: 0,
+                feedback: "Désactiver la géolocalisation permanente préserve ta vie privée et évite que l'on sache où tu te trouves en temps réel."
+            },
+            {
+                q: "Pourquoi devez-vous « Refuser les accès » abusifs demandés par une simple application de jeu ?",
+                options: [
+                    "Une appli de jeu n'a absolument pas besoin d'accéder à tes contacts ni à ton micro !",
+                    "Parce que cela bloque le téléchargement du jeu",
+                    "Parce que les jeux refusent de fonctionner si on leur donne des autorisations",
+                    "Pour obliger l'application à devenir payante"
+                ],
+                answer: 0,
+                feedback: "Refuser les permissions inutiles (caméra, carnet d'adresses, micro) protège tes données d'un siphonnage abusif."
+            },
+
+            // Slide 9 & 10 : Partie 3 : Respecter les autres & La Règle d'or du Droit à l'image
+            {
+                q: "En quoi consiste la mission « Respecter les autres » sur Internet ?",
+                options: [
+                    "Prendre soin de sa propre réputation tout en préservant celle de ses camarades",
+                    "Publier des photos compromettantes pour faire rire la classe",
+                    "Créer des faux profils pour tester ses amis",
+                    "Ne jamais répondre aux messages de ses professeurs"
+                ],
+                answer: 0,
+                feedback: "Le respect numérique est réciproque : protéger son image implique de respecter scrupuleusement celle des autres."
+            },
+            {
+                q: "Quelle est la question obligatoire à se poser avant de poster la photo d'un ami en ligne ?",
+                options: [
+                    "« As-tu demandé et obtenu son autorisation ? »",
+                    "« Combien de likes cette photo va-t-elle récolter ? »",
+                    "« Est-ce que la photo est en haute définition ? »",
+                    "« Mon téléphone a-t-il assez de batterie ? »"
+                ],
+                answer: 0,
+                feedback: "Le droit à l'image impose d'obtenir le consentement explicite de la personne avant toute publication."
+            },
+            {
+                q: "Si vous n'avez pas l'autorisation d'un ami pour publier sa photo, quelle est la règle ?",
+                options: [
+                    "C'est INTERDIT ! Même pour une blague, ne publie jamais sans permission !",
+                    "Tu peux publier si tu ajoutes un emoji sur son visage",
+                    "Tu peux publier si tu supprimes la photo 5 minutes plus tard",
+                    "Tu peux publier si vous êtes dans la même classe"
+                ],
+                answer: 0,
+                feedback: "Sans accord, toute diffusion est strictement interdite par la loi et le règlement scolaire, même sous couvert d'humour."
+            },
+            {
+                q: "Que devez-vous faire immédiatement si un copain vous demande de retirer une photo de lui mise en ligne ?",
+                options: [
+                    "L'effacer immédiatement sans discuter !",
+                    "Refuser en disant que la photo t'appartient",
+                    "La transférer à d'autres amis avant de la supprimer",
+                    "Lui demander de l'argent pour l'enlever"
+                ],
+                answer: 0,
+                feedback: "Le respect de la vie privée d'autrui exige la suppression immédiate de l'image dès que la personne le demande."
+            },
+            {
+                q: "Pourquoi rappelle-t-on qu'« une photo embarrassante fait souffrir longtemps » ?",
+                options: [
+                    "Parce qu'une moquerie en ligne peut être enregistrée, rediffusée et blesser durablement la victime",
+                    "Parce que les photos numériques s'effacent au bout de 2 jours",
+                    "Parce que l'appareil photo devient inutilisable",
+                    "Parce que cela coûte cher de supprimer un fichier"
+                ],
+                answer: 0,
+                feedback: "La viralité d'une image humiliante peut entraîner une grande détresse et des conséquences psychologiques graves."
+            },
+
+            // Slide 11 : Internet n'oublie jamais ! (Le panneau d'affichage)
+            {
+                q: "Même si tu effaces un message ou un Snap quelques secondes après l'envoi, pourquoi le danger persiste-t-il ?",
+                options: [
+                    "Parce que quelqu'un a pu faire une capture d'écran en une seconde !",
+                    "Parce que les serveurs refusent d'effacer les Snaps",
+                    "Parce que ton téléphone conserve le message allumé",
+                    "Parce que le professeur reçoit une copie de tous les messages"
+                ],
+                answer: 0,
+                feedback: "Une simple capture d'écran fige le contenu à jamais et échappe définitivement à ton contrôle."
+            },
+            {
+                q: "Quelle comparaison frappante le cours donne-t-il sur les publications en ligne ?",
+                options: [
+                    "« Ne publie rien en ligne que tu n'oserais pas afficher en géant sur le panneau d'affichage dans la cour du collège ! »",
+                    "« Tout ce qui est publié sur Internet est totalement secret et invisible »",
+                    "« Écris tout ce qui te passe par la tête sans réfléchir »",
+                    "« Les messages en ligne ne sont lus par personne »"
+                ],
+                answer: 0,
+                feedback: "Cette règle d'or permet de tester instantanément si un contenu est approprié ou risqué avant diffusion."
+            },
+
+            // Slide 12 : Face au cyberharcèlement : Le Réflexe 3018
+            {
+                q: "Quelles sont les deux caractéristiques majeures du service d'appel « 3018 » ?",
+                options: [
+                    "C'est un numéro Gratuit & Anonyme (l'appel n'apparaît pas sur la facture des parents)",
+                    "C'est un numéro payant réservé uniquement aux adultes",
+                    "C'est un répondeur automatique sans conseiller humain",
+                    "C'est une messagerie interne du collège"
+                ],
+                answer: 0,
+                feedback: "Le 3018 est 100% gratuit, confidentiel et invisible sur les relevés téléphoniques."
+            },
+            {
+                q: "Que permet d'obtenir le 3018 en plus de l'écoute et du conseil ?",
+                options: [
+                    "Il permet de faire supprimer des contenus blessants très rapidement sur les plateformes",
+                    "Il offre des cadeaux et des jeux vidéo gratuits",
+                    "Il donne les adresses privées des cyberharceleurs",
+                    "Il attribue des points supplémentaires pour le brevet"
+                ],
+                answer: 0,
+                feedback: "Le 3018 possède des canaux directs avec les plateformes et réseaux sociaux pour obtenir le retrait d'urgence des contenus violents."
+            },
+            {
+                q: "Si tu es victime ou témoin de moqueries répétées en ligne, quelle est la consigne immédiate ?",
+                options: [
+                    "En parler immédiatement à un adulte de confiance (parents, CPE, professeur)",
+                    "Garder le silence et espérer que cela s'arrête tout seul",
+                    "Répondre par des insultes pour se venger",
+                    "Supprimer son téléphone et s'isoler"
+                ],
+                answer: 0,
+                feedback: "Briser la loi du silence en prévenant un adulte référent est la seule façon de stopper le harcèlement."
+            },
+
+            // Slide 13 & 14 : Partie 4 : Les bons réflexes & Ta routine d'hygiène numérique
+            {
+                q: "Dans ta routine d'hygiène numérique, que dois-tu faire pour « Les Historiques » ?",
+                options: [
+                    "Vider régulièrement l'historique de recherche et les cookies du navigateur",
+                    "Imprimer l'historique de recherche sur papier chaque semaine",
+                    "Envoyer son historique par e-mail à ses camarades",
+                    "Ne jamais effacer ses recherches"
+                ],
+                answer: 0,
+                feedback: "Purger régulièrement son historique et ses cookies allège le navigateur et protège ses données de navigation."
+            },
+            {
+                q: "Concernant « Les Applis » sur ton smartphone ou tablette, quelle bonne habitude faut-il adopter ?",
+                options: [
+                    "Supprimer les jeux et applications inutilisés qui aspirent tes données en arrière-plan",
+                    "Garder 500 applications ouvertes en même temps",
+                    "Installer toutes les applications qui passent dans les publicités",
+                    "Ne jamais faire de tri"
+                ],
+                answer: 0,
+                feedback: "Désinstaller les applications dormantes supprime les mouchards qui collectent vos données en tâche de fond."
+            },
+            {
+                q: "Concernant « Les Abonnés / Amis » sur tes comptes, quel tri s'impose dans ta routine ?",
+                options: [
+                    "Faire le tri dans ses réseaux et garder UNIQUEMENT les personnes que tu connais en vrai",
+                    "Accepter tous les inconnus pour dépasser les 10 000 abonnés",
+                    "Inviter des personnes au hasard dans le monde entier",
+                    "Créer 10 faux comptes"
+                ],
+                answer: 0,
+                feedback: "Un réseau sécurisé est un réseau restreint aux personnes réelles de ton entourage de confiance."
+            },
+            {
+                q: "À quelle fréquence minimale la routine conseille-t-elle la « Vérification » des paramètres de sécurité ?",
+                options: [
+                    "Contrôler ses paramètres de sécurité tous les 2 mois",
+                    "Une seule fois tous les 10 ans",
+                    "Toutes les 30 secondes",
+                    "Uniquement quand son compte est déjà piraté"
+                ],
+                answer: 0,
+                feedback: "Un check-up bimestriel permet de s'assurer que les applications n'ont pas réinitialisé leurs paramètres de confidentialité."
+            },
+
+            // Slide 15 : Situations du quotidien : Le Match ! (3 cas pratiques)
+            {
+                q: "Situation : Un inconnu te contacte sur un jeu ou une messagerie. Quel est le BON RÉFLEXE ?",
+                options: [
+                    "Tu bloques immédiatement la personne et tu en parles à un adulte",
+                    "Tu lui réponds poliment et tu lui donnes ton prénom et ton collège",
+                    "Tu lui envoies une photo pour faire connaissance",
+                    "Tu acceptes de le rencontrer après les cours"
+                ],
+                answer: 0,
+                feedback: "Face à un inconnu en ligne : blocage immédiat et signalement à un parent ou professeur."
+            },
+            {
+                q: "Situation : Une page de concours promet un « cadeau gratuit incroyable ». Quel est le BON RÉFLEXE ?",
+                options: [
+                    "Tu fermes la page immédiatement sans rien remplir !",
+                    "Tu saisis ton numéro de téléphone et ton adresse postale",
+                    "Tu donnes le mot de passe de ton compte ENT",
+                    "Tu transfères le lien à toute ta classe"
+                ],
+                answer: 0,
+                feedback: "Les promesses de gains mirobolants sont des pièges d'hameçonnage visant à collecter tes coordonnées."
+            },
+            {
+                q: "Situation : Tu veux télécharger un nouveau jeu. Quel est le BON RÉFLEXE avant d'installer ?",
+                options: [
+                    "Tu vérifies attentivement les autorisations demandées par l'application",
+                    "Tu acceptes toutes les permissions sans les lire",
+                    "Tu télécharges le jeu depuis un site pirate non sécurisé",
+                    "Tu désactives l'antivirus de l'ordinateur"
+                ],
+                answer: 0,
+                feedback: "Prendre 10 secondes pour contrôler les permissions permet de bloquer les applications intrusives."
+            },
+
+            // Slide 16 : Tes Alliés Institutionnels (La CNIL & Pix)
+            {
+                q: "Qu'est-ce que « La CNIL » et quel pouvoir majeur t'offre-t-elle en France ?",
+                options: [
+                    "L'organisme officiel qui veille à ta protection et t'offre le « Droit à l'oubli » (faire effacer une photo ou un compte)",
+                    "Une entreprise commerciale qui vend des jeux vidéo",
+                    "Un groupe de hackers internationaux",
+                    "Une marque de smartphone"
+                ],
+                answer: 0,
+                feedback: "La Commission Nationale de l'Informatique et des Libertés (CNIL) fait respecter la loi et garantit ton droit à l'effacement de tes données."
+            },
+            {
+                q: "Qu'est-ce que « L'Attestation Pix 6ème » passée au collège ?",
+                options: [
+                    "Un parcours officiel national pour tester et prouver tes super-pouvoirs numériques et ta sécurité",
+                    "Un examen payant de programmation avancée",
+                    "Un concours de rapidité sur clavier",
+                    "Une punition donnée aux élèves étourdis"
+                ],
+                answer: 0,
+                feedback: "Pix évalue et valide officiellement tes compétences numériques tout au long de ta scolarité."
+            },
+
+            // Slide 17 : À toi de jouer ! (Ressources & CDI)
+            {
+                q: "Si tu te poses des questions sur tes données ou sur un projet numérique au collège, à qui peux-tu t'adresser ?",
+                options: [
+                    "À ton professeur ou à ton professeur-documentaliste au CDI !",
+                    "À des inconnus sur des forums de discussion",
+                    "À personne, il vaut mieux garder ses doutes secrets",
+                    "À des robots en ligne"
+                ],
+                answer: 0,
+                feedback: "L'équipe pédagogique et le professeur-documentaliste au CDI sont tes interlocuteurs privilégiés pour t'accompagner."
+            },
+
+            // Questions de synthèse transversale (Permis Pro du Web)
+            {
+                q: "Parmi ces éléments, lequel combine des données directes et indirectes rendant une personne facilement traçable ?",
+                options: [
+                    "Une photo de profil avec son visage + le maillot de son club de sport + sa géolocalisation active",
+                    "Un pseudo imaginaire sur un compte privé sans géolocalisation",
+                    "Un mot de passe de 14 caractères composé de chiffres et de symboles",
+                    "Un fichier texte enregistré sur une clé USB éteinte"
+                ],
+                answer: 0,
+                feedback: "L'accumulation d'indices visuels et techniques directs/indirects permet d'identifier et localiser précisément une personne."
+            },
+            {
+                q: "Pourquoi est-il formellement interdit de partager les identifiants d'un camarade ?",
+                options: [
+                    "Parce que cela constitue une usurpation d'identité et une violation grave de la vie privée",
+                    "Parce que cela fait baisser la batterie de l'ordinateur",
+                    "Parce que le clavier s'abîme plus vite",
+                    "Parce que les lettres majuscules disparaissent"
+                ],
+                answer: 0,
+                feedback: "Utiliser ou diffuser le compte d'autrui est puni par la loi et engage la responsabilité de l'auteur."
+            },
+            {
+                q: "En résumé, quelle attitude fait de toi un véritable « Pro du Web » au quotidien ?",
+                options: [
+                    "Verrouiller ses accès, garder ses codes secrets, respecter autrui, refuser les pièges et alerter au 3018 en cas de souci",
+                    "Cliquer sur tous les concours gratuits et partager les photos des autres sans demander",
+                    "Utiliser le même mot de passe '123456' sur tous ses profils publics",
+                    "Accepter toutes les invitations d'inconnus pour devenir populaire"
+                ],
+                answer: 0,
+                feedback: "La maîtrise technique alliée à l'éthique et à la prudence font le véritable citoyen numérique éclairé !"
+            }
+        ];
+
+        let questions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let isAnswered = false;
+
+        const quizView = document.getElementById('quiz-view');
+        const resultsView = document.getElementById('results-view');
+        const questionText = document.getElementById('question-text');
+        const questionIndexLabel = document.getElementById('question-index-label');
+        const optionsContainer = document.getElementById('options-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const liveScore = document.getElementById('live-score');
+        const feedbackBox = document.getElementById('feedback-box');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackDesc = document.getElementById('feedback-desc');
+        const nextBtn = document.getElementById('next-btn');
+
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function initQuiz() {
+            questions = shuffleArray(rawQuestions).map(q => {
+                const mappedOptions = q.options.map((optText, originalIndex) => ({
+                    text: optText,
+                    isCorrect: originalIndex === q.answer
+                }));
+                return {
+                    q: q.q,
+                    options: shuffleArray(mappedOptions),
+                    feedback: q.feedback
+                };
+            });
+
+            currentIndex = 0;
+            score = 0;
+            isAnswered = false;
+
+            quizView.style.display = 'block';
+            resultsView.style.display = 'none';
+            liveScore.innerText = `Score : 0 / ${questions.length}`;
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            isAnswered = false;
+            nextBtn.disabled = true;
+            feedbackBox.style.display = 'none';
+
+            const total = questions.length;
+            const currentNum = currentIndex + 1;
+            const qData = questions[currentIndex];
+
+            progressText.innerText = `Question ${currentNum} sur ${total}`;
+            questionIndexLabel.innerText = `Question ${currentNum} / ${total}`;
+            progressBar.style.width = `${(currentNum / total) * 100}%`;
+
+            questionText.innerText = qData.q;
+
+            optionsContainer.innerHTML = '';
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-button';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleSelectOption(idx, opt.isCorrect);
+                optionsContainer.appendChild(btn);
+            });
+
+            if (currentIndex === total - 1) {
+                nextBtn.innerText = "Consulter le Bilan Pix ➔";
+            } else {
+                nextBtn.innerText = "Question suivante ➔";
+            }
+        }
+
+        function handleSelectOption(selectedIdx, isCorrect) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const buttons = optionsContainer.querySelectorAll('.option-button');
+            const qData = questions[currentIndex];
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (qData.options[idx].isCorrect) {
+                    btn.classList.add('correct');
+                } else if (idx === selectedIdx) {
+                    btn.classList.add('wrong');
+                } else {
+                    btn.classList.add('dimmed');
+                }
+            });
+
+            if (isCorrect) {
+                score++;
+                feedbackBox.className = 'feedback-container correct';
+                feedbackTitle.innerText = "✓ Bonne réponse !";
+            } else {
+                feedbackBox.className = 'feedback-container wrong';
+                feedbackTitle.innerText = "✕ Mauvaise réponse !";
+            }
+
+            liveScore.innerText = `Score : ${score} / ${questions.length}`;
+            feedbackDesc.innerText = qData.feedback;
+            feedbackBox.style.display = 'block';
+
+            nextBtn.disabled = false;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        function showResults() {
+            quizView.style.display = 'none';
+            resultsView.style.display = 'block';
+
+            const total = questions.length;
+            const percent = Math.round((score / total) * 100);
+
+            document.getElementById('final-percent').innerText = `${percent}%`;
+            document.getElementById('stat-correct-count').innerText = score;
+            document.getElementById('stat-wrong-count').innerText = total - score;
+
+            const titleEl = document.getElementById('result-title-text');
+            const descEl = document.getElementById('result-desc-text');
+
+            if (percent >= 90) {
+                titleEl.innerText = "🏆 Grand Maître Pro du Web & Expert Pix !";
+                descEl.innerText = "Félicitations ! Tu maîtrises parfaitement la distinction entre données directes et indirectes, les traces automatiques, la création de mots de passe en béton (12 caractères, cloisonnés), le paramétrage de ton panneau de contrôle (profil privé, GPS, permissions), la règle d'or du droit à l'image, le réflexe 3018, la routine d'hygiène numérique et le rôle de la CNIL. Tu es un modèle de citoyenneté numérique !";
+            } else if (percent >= 75) {
+                titleEl.innerText = "⭐ Pro du Web Confirmé !";
+                descEl.innerText = "Très bon score ! Tu as acquis d'excellents réflexes pour protéger tes données privées, sécuriser tes comptes, respecter tes camarades et déjouer les pièges courants du quotidien.";
+            } else if (percent >= 50) {
+                titleEl.innerText = "🛡️ Apprenti Citoyen Numérique";
+                descEl.innerText = "Des bases acquises, mais reste vigilant : revois bien les critères d'un mot de passe en béton, la gestion des autorisations d'applications, le réflexe 3018 et les 4 missions du Pro du Web.";
+            } else {
+                titleEl.innerText = "⚠️ Guide du Pro du Web à Relire";
+                descEl.innerText = "Attention à tes données personnelles et à tes traces en ligne ! Relis attentivement les 4 missions du cours, mémorise la règle d'or du droit à l'image et le numéro 3018, puis retente l'évaluation pour valider tes compétences.";
+            }
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        window.addEventListener('DOMContentLoaded', initQuiz);
+    </script>
+</body>
+</html>
